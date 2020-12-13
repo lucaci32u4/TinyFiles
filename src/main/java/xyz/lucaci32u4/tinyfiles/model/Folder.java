@@ -5,18 +5,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class Folder {
     private static final Logger logger = LoggerFactory.getLogger(Folder.class);
+    public static final Pattern pathnameRegex = Pattern.compile("^(/(\\.?[\\w\\- ]+)+)+$");
     public static final Pattern filenameRegex = File.filenameRegex;
 
     private final String sysPrefix;
@@ -51,7 +54,7 @@ public class Folder {
         sysPrefix = rootPath;
         this.completePath = "/";
         this.sysCompletePath = rootPath + completePath;
-        this.name = "/";
+        this.name = "";
         this.parent = null;
         refresh();
     }
@@ -138,6 +141,16 @@ public class Folder {
 
     public Stream<File> deepFileStream() {
         return Stream.concat(files.stream(), folders.stream().flatMap(Folder::deepFileStream));
+    }
+
+    File getFile(String path) {
+        if (path.contains("/")) {
+            int slashIndex = path.indexOf('/');
+            String next = path.substring(0, slashIndex);
+            return folders.stream().filter(folder -> folder.getName().equals(next)).findAny().map(folder -> folder.getFile(path.substring(slashIndex + 1))).orElse(null);
+        } else {
+            return files.stream().filter(file -> file.getName().equals(path)).findAny().orElse(null);
+        }
     }
 
     @Override

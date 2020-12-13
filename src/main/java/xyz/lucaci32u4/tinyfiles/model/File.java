@@ -45,12 +45,12 @@ public class File {
         try {
             lastModifiedTimeUnixEpoch = Files.getLastModifiedTime(Paths.get(sysCompletePath)).toMillis();
         } catch (IOException e) {
-            throw new RuntimeIOException("Could not get timestamp for file '" + completePath + "'");
+            throw new RuntimeIOException("Could not get timestamp for file '" + sysCompletePath + "'");
         }
         try {
             size = Files.size(Paths.get(sysCompletePath));
         } catch (IOException e) {
-            throw new RuntimeIOException("Could not get file size for file '" + completePath + "'");
+            throw new RuntimeIOException("Could not get file size for file '" + sysCompletePath + "'");
         }
     }
 
@@ -84,9 +84,9 @@ public class File {
 
     public FileInputStream openInputStream() {
         try {
-            return new FileInputStream(completePath);
+            return new FileInputStream(sysCompletePath);
         } catch (IOException e) {
-            throw new RuntimeException("Could not open file '" + completePath + "'");
+            throw new RuntimeException("Could not open file '" + sysCompletePath + "'");
         }
     }
 

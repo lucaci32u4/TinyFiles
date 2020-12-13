@@ -9,6 +9,9 @@ public class Main {
 
     public static void main(String [] args) {
         FileSystemService fss = new FileSystemService("/home/ux/test/folders", 2);
+        WebServer webServer = new WebServer();
+        webServer.createRoutes(fss);
+        webServer.start("127.0.0.1", 3000);
     }
 
 }

@@ -5,7 +5,9 @@ import com.google.common.collect.HashBiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +55,13 @@ public class FileSystemService {
                 logger.error("Could not register watcher for folder '" + folder.getSysCompletePath() + "'", exception);
             }
         }
+    }
+
+    public CompletableFuture<InputStream> getFileContentStream(String path) {
+        return CompletableFuture.supplyAsync(() -> {
+            File f = root.getFile(path.substring(1));
+            return f != null ? f.openInputStream() : null;
+        });
     }
 
     private class UpdateConsumer implements Runnable {
